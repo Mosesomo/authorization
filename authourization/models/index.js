@@ -1,5 +1,3 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -8,13 +6,34 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
+const pg = require('pg');
+config.dialectModule = pg;
+
+// Load environment variables
+require('dotenv').config();
+
 let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  sequelize = new Sequelize({
+    dialect: 'postgres',
+    dialectModule: pg,
+    host: process.env.DB_HOST || config.host,
+    port: 5432,
+    username: process.env.DB_USER || config.username,
+    password: process.env.DB_PASSWORD || config.password,
+    database: process.env.DB_NAME || config.database,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+  });
 }
 
+// Import models dynamically
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -35,3 +54,4 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 module.exports = db;
+
