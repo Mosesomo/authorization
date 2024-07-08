@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-const route = require('./routes/route');
+const route = require('./api/route');
 app.use('/', route);
 
 sequelize.sync()
