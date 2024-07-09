@@ -6,30 +6,16 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
-// Load environment variables
+
 require('dotenv').config();
 
-let sequelize;
-if (env === 'production' && process.env.POSTGRES_URL) {
-  sequelize = new Sequelize(process.env.POSTGRES_URL, {
-    dialect: 'postgres',
-    dialectModule: require('pg'),
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
-  });
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, {
+const sequelize = new Sequelize(config.database, config.username, config.password, {
     host: config.host,
     port: config.port,
     dialect: config.dialect,
     dialectModule: config.dialectModule,
     dialectOptions: config.dialectOptions,
   });
-}
 
 fs
   .readdirSync(__dirname)
