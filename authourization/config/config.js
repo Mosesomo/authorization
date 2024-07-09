@@ -17,11 +17,7 @@ module.exports = {
     },
   },
   production: {
-    username: process.env.DB_USER || 'moses',
-    password: process.env.DB_PASSWORD || 'root@01',
-    database: process.env.DB_NAME || 'authourization',
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
+    connectionString: process.env.POSTGRES_URL,
     dialect: 'postgres',
     dialectModule: require('pg'),
     dialectOptions: {
