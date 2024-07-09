@@ -69,7 +69,6 @@ const createOrganisation = asyncHandler(async (req, res) => {
   }
 });
 
-
 const addUserToOrganisation = asyncHandler(async (req, res) => {
   const { orgId } = req.params;
   const { userId } = req.body;
@@ -78,8 +77,12 @@ const addUserToOrganisation = asyncHandler(async (req, res) => {
     const organisation = await Organisation.findByPk(orgId);
     const user = await User.findByPk(userId);
 
-    if (!organisation || !user) {
-      return res.status(404).json({ status: 'Not Found', message: 'Organisation or User not found', statusCode: 404 });
+    if (!organisation) {
+      return res.status(404).json({ status: 'Not Found', message: 'Organisation not found', statusCode: 404 });
+    }
+
+    if (!user) {
+      return res.status(404).json({ status: 'Not Found', message: 'User not found', statusCode: 404 });
     }
 
     await organisation.addUser(user);
@@ -89,9 +92,11 @@ const addUserToOrganisation = asyncHandler(async (req, res) => {
       message: 'User added to organisation successfully'
     });
   } catch (error) {
+    console.error('Error adding user to organisation:', error);
     res.status(400).json({ status: 'Bad Request', message: 'Client error', statusCode: 400 });
   }
 });
+
 
 module.exports = {
   getAllOrganisations,
