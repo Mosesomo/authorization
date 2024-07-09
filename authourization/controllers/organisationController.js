@@ -43,16 +43,19 @@ const getOrganisation = asyncHandler(async (req, res) => {
 const createOrganisation = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array().map(err => ({ field: err.param, message: err.msg })) });
+    return res.status(422).json({
+      errors: errors.array().map(err => ({ field: err.param, message: err.msg }))
+    });
   }
 
   const { name, description } = req.body;
 
   try {
     const orgId = uuidv4();
-    const newOrganisation = await Organisation.create({ orgId, name, description });
+    const userId = req.user.userId;
+    const newOrganisation = await Organisation.create({ orgId, name, description, userId });
 
-    const user = await User.findByPk(req.user.userId);
+    const user = await User.findByPk(userId);
     await user.addOrganisation(newOrganisation);
 
     res.status(201).json({
@@ -65,6 +68,7 @@ const createOrganisation = asyncHandler(async (req, res) => {
     res.status(400).json({ status: 'Bad Request', message: 'Client error', statusCode: 400 });
   }
 });
+
 
 const addUserToOrganisation = asyncHandler(async (req, res) => {
   const { orgId } = req.params;
