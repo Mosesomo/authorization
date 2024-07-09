@@ -10,6 +10,10 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 const route = require('./api/route');
+app.use('/', (req, res) => {
+	res.status(200).json({message: "Hello and welcome"});
+});
+
 app.use('/', route);
 
 sequelize.sync()
